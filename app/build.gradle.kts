@@ -17,7 +17,7 @@ val ciVersionName = System.getenv("VERSION_NAME") ?: "1.0.0"
 // used; otherwise the release build falls back to the debug key so the APK is
 // still installable.
 // ---------------------------------------------------------------------------
-val keystorePath: String? = System.getenv("KEYSTORE_FILE")
+val keystorePath: String? = System.getenv("KEYSTORE_FILE")?.takeIf { it.isNotBlank() }
 val hasReleaseKeystore = keystorePath != null && file(keystorePath).exists()
 
 android {
