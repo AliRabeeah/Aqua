@@ -4,6 +4,22 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+// ---------------------------------------------------------------------------
+// Versioning
+// CI passes VERSION_CODE / VERSION_NAME so every build gets a fresh number.
+// Locally they fall back to 1 / 1.0.0.
+// ---------------------------------------------------------------------------
+val ciVersionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+val ciVersionName = System.getenv("VERSION_NAME") ?: "1.0.0"
+
+// ---------------------------------------------------------------------------
+// Optional release signing. If the CI secrets are present a real keystore is
+// used; otherwise the release build falls back to the debug key so the APK is
+// still installable.
+// ---------------------------------------------------------------------------
+val keystorePath: String? = System.getenv("KEYSTORE_FILE")
+val hasReleaseKeystore = keystorePath != null && file(keystorePath).exists()
+
 android {
     namespace = "com.alihalim.aqua"
     compileSdk = 34
@@ -12,18 +28,43 @@ android {
         applicationId = "com.alihalim.aqua"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = ciVersionCode
+        versionName = ciVersionName
         vectorDrawables { useSupportLibrary = true }
+    }
+
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            create("release") {
+                storeFile = file(keystorePath!!)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = if (hasReleaseKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
         debug {
             isMinifyEnabled = false
+        }
+    }
+
+    // Name the output file Aqua-v<versionName>-<buildType>.apk
+    applicationVariants.all {
+        val variant = this
+        outputs.all {
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            output.outputFileName = "Aqua-v" + variant.versionName + "-" + variant.buildType.name + ".apk"
         }
     }
 
