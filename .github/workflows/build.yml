@@ -1,13 +1,13 @@
-name: Build APK
+name: Build & Release APK
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  release:
-    types: [ published ]
   workflow_dispatch:
+
+# Required so the workflow can create releases and upload assets.
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -16,6 +16,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Compute version
+        id: version
+        run: |
+          # MAJOR.MINOR are fixed here; bump them by hand for a real milestone.
+          # PATCH is the workflow run number, so every push produces a new,
+          # always-increasing version.
+          MAJOR=1
+          MINOR=0
+          PATCH=${{ github.run_number }}
+          echo "version_name=$MAJOR.$MINOR.$PATCH" >> "$GITHUB_OUTPUT"
+          echo "version_code=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "tag=v$MAJOR.$MINOR.$PATCH" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -41,32 +54,58 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      # Decodes the signing keystore only if the repository secret exists.
+      # Without it the release APK is signed with the debug key instead,
+      # which still installs fine but changes signature between runs.
+      - name: Decode keystore
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/aqua.jks"
+            echo "path=$RUNNER_TEMP/aqua.jks" >> "$GITHUB_OUTPUT"
+            echo "Release keystore configured."
+          else
+            echo "No keystore secret found - falling back to debug signing."
+          fi
 
-      - name: Build release APK (unsigned)
+      - name: Build release APK
+        env:
+          VERSION_NAME: ${{ steps.version.outputs.version_name }}
+          VERSION_CODE: ${{ steps.version.outputs.version_code }}
+          KEYSTORE_FILE: ${{ steps.keystore.outputs.path }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease --stacktrace
 
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Aqua-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+      - name: List built APKs
+        run: ls -lh app/build/outputs/apk/release/
 
-      - name: Upload release APK
+      - name: Upload APK as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Aqua-release-unsigned-apk
+          name: Aqua-v${{ steps.version.outputs.version_name }}
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
-      - name: Attach APKs to release
-        if: github.event_name == 'release'
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Aqua ${{ steps.version.outputs.version_name }}
+          body: |
+            ### Aqua ${{ steps.version.outputs.version_name }}
+
+            نسخة جديدة من تطبيق Aqua لتتبع شرب الماء.
+
+            - **رقم الإصدار / Version:** `${{ steps.version.outputs.version_name }}`
+            - **versionCode:** `${{ steps.version.outputs.version_code }}`
+            - **Commit:** `${{ github.sha }}`
+
+            حمّل ملف `.apk` من الأسفل وثبّته مباشرة على هاتفك.
+          files: app/build/outputs/apk/release/*.apk
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true
