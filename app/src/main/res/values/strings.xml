@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aqua</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_about">About</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Stay hydrated</string>
+    <string name="home_goal_label">Daily goal</string>
+    <string name="home_progress_of">%1$d of %2$d ml</string>
+    <string name="home_add_250">+250 ml</string>
+    <string name="home_add_500">+500 ml</string>
+    <string name="home_add_custom">Custom</string>
+    <string name="home_custom_title">Add custom amount</string>
+    <string name="home_custom_hint">Amount in ml</string>
+    <string name="home_goal_reached">Goal reached! Great job 🎉</string>
+    <string name="home_today_log">Today\'s log</string>
+    <string name="home_no_entries">No water logged yet today</string>
+    <string name="home_undo">Undo</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_add">Add</string>
+    <string name="action_save">Save</string>
+
+    <!-- Goal -->
+    <string name="goal_edit_title">Set daily goal</string>
+    <string name="goal_hint">Goal in ml</string>
+    <string name="goal_liters">%.1f L</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Statistics</string>
+    <string name="stats_weekly">Weekly</string>
+    <string name="stats_monthly">Monthly</string>
+    <string name="stats_average">Average</string>
+    <string name="stats_best_day">Best day</string>
+    <string name="stats_no_data">No data yet — start logging your water!</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_general">General</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_ar">العربية</string>
+    <string name="settings_daily_goal">Daily goal</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_accent_color">Accent color</string>
+    <string name="settings_app_icon">App icon</string>
+    <string name="settings_icon_default">Default</string>
+    <string name="settings_icon_wave">Wave</string>
+    <string name="settings_icon_ring">Ring</string>
+    <string name="settings_section_reminders">Reminders</string>
+    <string name="settings_reminders_enabled">Enable reminders</string>
+    <string name="settings_reminder_interval">Reminder interval</string>
+    <string name="settings_reminder_interval_value">Every %d minutes</string>
+    <string name="settings_reminder_window">Active hours</string>
+    <string name="settings_reminder_from">From</string>
+    <string name="settings_reminder_to">To</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_about_link">About Aqua</string>
+    <string name="settings_notif_permission_needed">Please allow notifications so reminders can work</string>
+
+    <!-- Notifications -->
+    <string name="reminder_channel_name">Water reminders</string>
+    <string name="reminder_channel_desc">Periodic reminders to drink water</string>
+    <string name="reminder_notif_title">Time to hydrate 💧</string>
+    <string name="reminder_notif_body">Take a moment and drink some water</string>
+
+    <!-- About -->
+    <string name="about_title">About Aqua</string>
+    <string name="about_developer_label">Developed by</string>
+    <string name="about_developer_name">Ali Halim</string>
+    <string name="about_version">Version %s</string>
+    <string name="about_quran_verse">"وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ"</string>
+    <string name="about_quran_reference">Surah Al-Anbiya, 21:30</string>
+</resources>

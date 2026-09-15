@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="aqua_black">#000000</color>
+    <color name="aqua_orange">#FF8A3D</color>
+    <color name="aqua_white">#FFFFFF</color>
+    <color name="aqua_surface_dark">#121212</color>
+    <color name="aqua_surface_light">#F5F5F5</color>
+    <color name="aqua_on_dark">#EDEDED</color>
+    <color name="aqua_on_light">#121212</color>
+    <color name="aqua_muted_dark">#8A8A8A</color>
+    <color name="aqua_muted_light">#6B6B6B</color>
+</resources>
