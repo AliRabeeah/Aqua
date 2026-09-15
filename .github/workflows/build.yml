@@ -25,6 +25,15 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action's default is "tools platform-tools". The legacy "tools"
+          # package was removed from the SDK repository, so cmdline-tools 16.0
+          # fails with "Failed to find package 'tools'". Passing an empty list
+          # skips it; Gradle downloads the platform/build-tools it needs.
+          packages: ''
+
+      - name: Accept SDK licenses
+        run: yes | sdkmanager --licenses > /dev/null 2>&1 || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
